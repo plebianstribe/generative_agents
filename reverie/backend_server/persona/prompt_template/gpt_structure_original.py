@@ -12,15 +12,6 @@ import time
 from utils import *
 
 openai.api_key = openai_api_key
-openai.api_type = "azure"
-openai.api_base = azure_url
-openai.api_version = "2023-05-15"
-
-#client = openai.AzureOpenAI(
-#    api_key=openai.api_key,
-#    api_version="2023-05-15",
-#    azure_endpoint = azure_url
-#    )
 
 def temp_sleep(seconds=0.1):
   time.sleep(seconds)
@@ -29,8 +20,7 @@ def ChatGPT_single_request(prompt):
   temp_sleep()
 
   completion = openai.ChatCompletion.create(
-    #model="gpt-3.5-turbo", 
-    model=azure_deployments[0], 
+    model="gpt-3.5-turbo", 
     messages=[{"role": "user", "content": prompt}]
   )
   return completion["choices"][0]["message"]["content"]
@@ -56,8 +46,7 @@ def GPT4_request(prompt):
 
   try: 
     completion = openai.ChatCompletion.create(
-    #model="gpt-4",
-    model=azure_deployments[1], 
+    model="gpt-4", 
     messages=[{"role": "user", "content": prompt}]
     )
     return completion["choices"][0]["message"]["content"]
@@ -82,8 +71,7 @@ def ChatGPT_request(prompt):
   # temp_sleep()
   try: 
     completion = openai.ChatCompletion.create(
-    #model="gpt-3.5-turbo", 
-    model=azure_deployments[0], 
+    model="gpt-3.5-turbo", 
     messages=[{"role": "user", "content": prompt}]
     )
     return completion["choices"][0]["message"]["content"]
@@ -221,9 +209,7 @@ def GPT_request(prompt, gpt_parameter):
   temp_sleep()
   try: 
     response = openai.Completion.create(
-                #model=gpt_parameter["engine"],
-                engine=gpt_parameter["engine"],
-                #deployment_id=gpt_parameter["engine"],
+                model=gpt_parameter["engine"],
                 prompt=prompt,
                 temperature=gpt_parameter["temperature"],
                 max_tokens=gpt_parameter["max_tokens"],
@@ -233,10 +219,8 @@ def GPT_request(prompt, gpt_parameter):
                 stream=gpt_parameter["stream"],
                 stop=gpt_parameter["stop"],)
     return response.choices[0].text
-  except Exception as e: 
+  except: 
     print ("TOKEN LIMIT EXCEEDED")
-    print(gpt_parameter["engine"])
-    print (e)
     return "TOKEN LIMIT EXCEEDED"
 
 
@@ -294,11 +278,11 @@ def get_embedding(text, model="text-embedding-ada-002"):
   if not text: 
     text = "this is blank"
   return openai.Embedding.create(
-          input=[text], model=model, engine=model, deployment=model)['data'][0]['embedding']
+          input=[text], model=model)['data'][0]['embedding']
 
 
 if __name__ == '__main__':
-  gpt_parameter = {"engine": "gpt-35-ti", "max_tokens": 50, 
+  gpt_parameter = {"engine": "text-davinci-003", "max_tokens": 50, 
                    "temperature": 0, "top_p": 1, "stream": False,
                    "frequency_penalty": 0, "presence_penalty": 0, 
                    "stop": ['"']}
@@ -325,7 +309,6 @@ if __name__ == '__main__':
                                  True)
 
   print (output)
-
 
 
 
